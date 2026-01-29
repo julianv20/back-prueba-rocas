@@ -32,10 +32,3 @@ La API estará disponible en:
 http://localhost:8000
 http://localhost:8000/api/docs
 
-
-Los cambios principales:
-- Agregué `#` para títulos y `##` para subtítulos
-- Separé los bloques de código con ` ```bash ` y ` ``` `
-- Agregué `###` para diferenciar macOS/Linux y Windows
-- Convertí las URLs en links clickeables
-- Mejoré el espaciado y estructura
