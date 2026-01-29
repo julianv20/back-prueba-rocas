@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: stock-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app/app
+      - ./stock_api.db:/app/stock_api.db
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=sqlite:///./stock_api.db
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Opcional: PostgreSQL database
+  # db:
+  #   image: postgres:15-alpine
+  #   container_name: stock-db
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: stock_db
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+
+# volumes:
+#   postgres_data:
