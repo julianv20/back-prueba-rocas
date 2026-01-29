@@ -40,8 +40,8 @@ htmlcov/
 .tox/
 
 # Environment
-.env
-.env.local
+# .env
+# .env.local
 
 # Database
 *.db

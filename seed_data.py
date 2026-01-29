@@ -15,21 +15,17 @@ from app.domain.model.stock import Product, Warehouse, StockMove, StockMoveType
 from app.domain.usecase.util.security import SecurityService
 from app.application.settings import settings
 
-# Initialize database
 db = Database(database_url=settings.database_url)
 db.create_database()
 
-# Initialize repositories
 user_repo = SQLAlchemyUserRepository(session_factory=db.session)
 stock_repo = SQLAlchemyStockRepository(session_factory=db.session)
 
-# Security service
 security = SecurityService()
 
 
 async def seed_users():
-    """Seed initial users"""
-    print("🔐 Seeding users...")
+    print("Seeding users...")
     
     users = [
         User(
@@ -76,10 +72,8 @@ async def seed_users():
 
 
 async def seed_products():
-    """Seed 150 products with different categories"""
-    print("📦 Seeding products...")
+    print("Seeding products...")
     
-    # Categories and product templates
     categories = {
         "Laptops": [
             "Dell XPS", "HP Pavilion", "Lenovo ThinkPad", "ASUS VivoBook", 
@@ -138,9 +132,8 @@ async def seed_products():
     
     for category, items in categories.items():
         for item in items:
-            # Generate multiple variants per item
             variants = ["", " Plus", " Pro", " Ultra", " Max"]
-            for variant in variants[:3]:  # 3 variants max per item
+            for variant in variants[:3]:
                 if product_id > 150:
                     break
                 
@@ -170,18 +163,14 @@ async def seed_products():
                 await stock_repo.create_product(product)
                 created_count += 1
                 
-                # Show progress every 30 items
-                if i % 30 == 0:
-                    print(f"   📈 Progress: {i}/150 products created...")
         except Exception as e:
-            print(f"   ❌ Error creating product {product.name}: {e}")
+            print(f"Error creating product {product.name}: {e}")
     
-    print(f"   ✅ {created_count} products created")
+    print(f"{created_count} products created")
 
 
 async def seed_warehouses():
-    """Seed initial warehouses"""
-    print("🏭 Seeding warehouses...")
+    print("Seeding warehouses...")
     
     warehouses = [
         Warehouse(id="W001", name="Bodega Central"),
@@ -200,24 +189,21 @@ async def seed_warehouses():
                 await stock_repo.create_warehouse(warehouse)
                 created_count += 1
         except Exception as e:
-            print(f"   ❌ Error creating warehouse {warehouse.name}: {e}")
+            print(f"Error creating warehouse {warehouse.name}: {e}")
     
-    print(f"   ✅ {created_count} warehouses created")
+    print(f"{created_count} warehouses created")
 
 
 async def seed_stock_moves():
-    """Seed 30 stock moves with realistic data"""
-    print("📊 Seeding stock moves...")
+    print("Seeding stock moves...")
     
-    # Get products and warehouses
     products = await stock_repo.find_all_products()
     warehouses = await stock_repo.find_all_warehouses()
     
     if not products or not warehouses:
-        print("   ❌ No products or warehouses found. Seed them first.")
+        print("No products or warehouses found. Seed them first.")
         return
     
-    # Reference templates
     in_references = [
         "Compra a proveedor principal",
         "Restock mensual programado",
@@ -259,33 +245,28 @@ async def seed_stock_moves():
     start_date = date(2025, 1, 1)
     created_count = 0
     
-    # Generate 30 stock moves
     for i in range(30):
         move_id = f"SM{str(i+1).zfill(3)}"
         
-        # Random date in the last 6 months
         random_days = random.randint(0, 180)
         move_date = start_date + timedelta(days=random_days)
         
-        # Random product and warehouse
         product = random.choice(products)
         warehouse = random.choice(warehouses)
         
-        # Random type with weighted probability
-        type_weights = [0.5, 0.35, 0.15]  # IN, OUT, ADJUST
+        type_weights = [0.5, 0.35, 0.15]
         move_type = random.choices(
             [StockMoveType.IN, StockMoveType.OUT, StockMoveType.ADJUST],
             weights=type_weights
         )[0]
         
-        # Quantity and reference based on type
         if move_type == StockMoveType.IN:
             quantity = random.randint(20, 150)
             reference = random.choice(in_references)
         elif move_type == StockMoveType.OUT:
             quantity = random.randint(5, 80)
             reference = random.choice(out_references)
-        else:  # ADJUST
+        else:
             quantity = random.randint(1, 30)
             reference = random.choice(adjust_references)
         
@@ -305,19 +286,15 @@ async def seed_stock_moves():
                 await stock_repo.create_stock_move(stock_move)
                 created_count += 1
                 
-                # Show progress every 10 items
-                if (i + 1) % 10 == 0:
-                    print(f"   📈 Progress: {i + 1}/30 stock moves created...")
         except Exception as e:
-            print(f"   ❌ Error creating stock move {stock_move.id}: {e}")
+            print(f"Error creating stock move {stock_move.id}: {e}")
     
-    print(f"   ✅ {created_count} stock moves created")
+    print(f"{created_count} stock moves created")
 
 
 async def main():
-    """Main seed function"""
     print("\n" + "=" * 60)
-    print("🌱 INICIANDO SEED DE LA BASE DE DATOS")
+    print("INICIANDO SEED DE LA BASE DE DATOS")
     print("=" * 60 + "\n")
     
     await seed_users()
@@ -332,24 +309,7 @@ async def main():
     await seed_stock_moves()
     
     print("\n" + "=" * 60)
-    print("🎉 SEED COMPLETADO EXITOSAMENTE!")
-    print("=" * 60)
-    print("\n📊 RESUMEN:")
-    print("   • 4 usuarios creados")
-    print("   • 150 productos creados")
-    print("   • 6 bodegas creadas")
-    print("   • 30 movimientos de stock creados")
-    print("\n👤 USUARIOS DE PRUEBA:")
-    print("   • admin@example.com / admin123")
-    print("   • test@example.com / test123")
-    print("   • john.doe@example.com / john123")
-    print("   • jane.smith@example.com / jane123")
-    print("\n🚀 SERVIDOR:")
-    print("   python -m uvicorn app.main:app --reload")
-    print("\n📚 DOCUMENTACIÓN:")
-    print("   http://localhost:8000/api/docs")
-    print("=" * 60 + "\n")
-
-
+    print("SEED COMPLETADO EXITOSAMENTE!")
+    
 if __name__ == "__main__":
     asyncio.run(main())

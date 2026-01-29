@@ -15,12 +15,16 @@ macOS / Linux
 python3.11 -m venv venv
 source venv/bin/activate
 Windows
-python -m venv venv
-venv\Scripts\activate
+py -3.12 -m venv venv
+.\venv\Scripts\Activate.ps1
 Instalar dependencias
 pip install -r requirements.txt
 Ejecutar la aplicación
 Desde la raíz del proyecto:
+
+IMPORTANTE ejecutar esto:
+python seed_data.py
+para llenar db
 
 uvicorn app.main:app --reload
 La API estará disponible en:
